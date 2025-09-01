@@ -1,5 +1,7 @@
 # Backend API Documentation
 
+# `/users/register` EndPoint
+
 ## Description
 This endpoint registers a new user. It validates the provided data, hashes the password, creates a user record in the database, and returns a JSON Web Token (JWT) along with the user details.
 
