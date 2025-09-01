@@ -18,7 +18,32 @@ module.exports.registerUser=async(req,res,next)=>{
 
     const user=await createUser({firstName:fullname.firstName,lastName:fullname.lastName,email,password:hashedPassword})
 
-    const token=userModel.generateAuthToken()
+    const token=userModel.generateAuthToken(user._id)
     res.status(201).json({token,user})
 
+}
+
+module.exports.loginUser=async(req,res,next)=>{
+    const errors=validationResult(req)
+
+    if (!errors.isEmpty()){
+        return res.status(400).json({errors:errors.array()})
+    }
+
+    const {email,password}=req.body
+
+    const existingUser=await userModel.findOne({email}).select("+password")
+
+    if(!existingUser){
+        return res.status(401).json({message:"Invalid Email Or Wrong Password"})
+    }
+
+    const isPasswordMatched=await userModel.comparePassword(password,existingUser.password)
+
+    if(!isPasswordMatched){
+        return res.status(401).json({message:"Invalid Email Or Wrong Password"})
+    }
+
+    const token=await userModel.generateAuthToken(existingUser._id)
+    return res.status(200).json({token,existingUser})
 }

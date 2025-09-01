@@ -1,21 +1,21 @@
 # Backend API Documentation
 
-# `/users/register` EndPoint
+## `/users/register` EndPoint
 
-## Description
+### Description
 This endpoint registers a new user. It validates the provided data, hashes the password, creates a user record in the database, and returns a JSON Web Token (JWT) along with the user details.
 
-## URL
+### URL
 **POST** `/users/register`
 
-## Request Body
+### Request Body
 - **fullname** (object): Contains the user's name.
   - **firstName** (string, required): Must be at least 3 characters long.
   - **lastName** (string, optional): If provided, must be at least 3 characters long.
 - **email** (string, required): Must be a valid email address and at least 5 characters long.
 - **password** (string, required): Must be at least 6 characters long.
 
-### Example Request
+#### Example Request
 ```json
 {
   "fullname": {
@@ -27,13 +27,12 @@ This endpoint registers a new user. It validates the provided data, hashes the p
 }
 ```
 
-## Responses
+### Responses
 
-### Success Response
+#### Success Response
 - **Status Code:** 201 Created
 - **Content:** Returns a JWT token and the created user object.
 
-#### Example Success Response
 ```json
 {
   "token": "JWT_TOKEN_HERE",
@@ -42,17 +41,16 @@ This endpoint registers a new user. It validates the provided data, hashes the p
       "firstName": "John",
       "lastName": "Doe"
     },
-    "email": "john.doe@example.com",
+    "email": "john.doe@example.com"
     // Other user fields (excluding password)
   }
 }
 ```
 
-### Error Response
+#### Error Response
 - **Status Code:** 400 Bad Request
 - **Content:** Returns an array of validation error objects if the input data fails the validation checks.
 
-#### Example Error Response
 ```json
 {
   "errors": [
@@ -64,7 +62,77 @@ This endpoint registers a new user. It validates the provided data, hashes the p
   ]
 }
 ```
+
+---
+
+## `/users/login` EndPoint
+
+### Description
+This endpoint authenticates an existing user by verifying the credentials. It checks if the provided email exists and compares the submitted password with the stored hashed password. If authenticated, it returns a JWT token and the user details.
+
+### URL
+**POST** `/users/login`
+
+### Request Body
+- **email** (string, required): Must be a valid email address.
+- **password** (string, required): Must be at least 6 characters long.
+
+#### Example Request
+```json
+{
+  "email": "john.doe@example.com",
+  "password": "password123"
+}
+```
+
+### Responses
+
+#### Success Response
+- **Status Code:** 200 OK
+- **Content:** Returns a JWT token along with the authenticated user details.
+
+```json
+{
+  "token": "JWT_TOKEN_HERE",
+  "existingUser": {
+    "fullname": {
+      "firstName": "John",
+      "lastName": "Doe"
+    },
+    "email": "john.doe@example.com"
+    // Other user fields (excluding password)
+  }
+}
+```
+
+#### Error Responses
+- **Status Code:** 400 Bad Request  
+  Returns an array of validation error objects if the input data fails the validation checks.
+
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid Email",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+
+- **Status Code:** 401 Unauthorized  
+  Returns a message if the email does not exist or the password does not match.
+
+```json
+{
+  "message": "Invalid Email Or Wrong Password"
+}
+```
+
+---
+
 ## Notes
 - Input is validated using express-validator.
-- The password is hashed using bcrypt before storing.
-- The JWT is signed with a secret from environment variables and expires in 1 day. 
+- Passwords are hashed using bcrypt before storing.
+- JWT tokens are signed with a secret from environment variables and
