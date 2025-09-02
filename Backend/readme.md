@@ -132,6 +132,82 @@ This endpoint authenticates an existing user by verifying the credentials. It ch
 
 ---
 
+## `/users/profile` EndPoint
+
+### Description
+This endpoint retrieves the profile of the currently authenticated user. The request must include a valid JWT token in the authorization header.
+
+### URL
+**GET** `/users/profile`
+
+### Headers
+- **Authorization:** `Bearer JWT_TOKEN_HERE` (required)
+
+### Responses
+
+#### Success Response
+- **Status Code:** 200 OK
+- **Content:** Returns the user object.
+
+```json
+{
+  "_id": "USER_ID",
+  "fullname": {
+    "firstName": "John",
+    "lastName": "Doe"
+  },
+  "email": "john.doe@example.com"
+  // Other user fields (excluding password)
+}
+```
+
+#### Error Response
+- **Status Code:** 401 Unauthorized  
+  Returns a message if the token is missing, invalid, or expired.
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+## `/users/logout` EndPoint
+
+### Description
+This endpoint logs out the currently authenticated user by blacklisting the JWT token. The token provided in the authorization header will be stored in a blacklist, invalidating future requests using the same token.
+
+### URL
+**GET** `/users/logout`
+
+### Headers
+- **Authorization:** `Bearer JWT_TOKEN_HERE` (required)
+
+### Responses
+
+#### Success Response
+- **Status Code:** 200 OK
+- **Content:** Returns a confirmation message.
+
+```json
+{
+  "message": "Logged Out Successful!"
+}
+```
+
+
+#### Error Response
+- **Status Code:** 401 Unauthorized  
+  Returns a message if the token is missing or invalid.
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
 ## Notes
 - Input is validated using express-validator.
 - Passwords are hashed using bcrypt before storing.
