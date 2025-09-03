@@ -304,6 +304,161 @@ or
 }
 ```
 
+## `/captain/login` EndPoint
+
+### Description
+This endpoint authenticates an existing captain by verifying the credentials. It checks if the provided email exists and compares the submitted password with the stored hashed password. If authenticated, it returns a JWT token along with the captain details.
+
+### URL
+**POST** `/captain/login`
+
+### Request Body
+- **email** (string, required): Must be a valid email address.
+- **password** (string, required): Must be at least 6 characters long.
+
+#### Example Request
+```json
+{
+  "email": "jane.doe@example.com",
+  "password": "password123"
+}
+```
+
+### Responses
+
+#### Success Response
+- ** Code:** 200 OK
+- **Content:** Returns a JWT token along with the authenticated captain details.
+
+```json
+
+{
+  "token": "JWT_TOKEN_HERE",
+  "existingCaptain": {
+    "fullname": {
+      "firstName": "Jane",
+      "lastName": "Doe"
+    },
+    "email": "jane.doe@example.com",
+    "vehicle": {
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": "4",
+      "vehicleType": "car"
+    }
+    // Other captain fields (excluding password)
+  }
+}
+```
+
+#### Error Responses
+- **Status Code:** 400 Bad Request  
+  Returns an array of validation error objects if the input data fails the validation checks.
+
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid Email",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+- **Status Code:** 401 Unauthorized  
+  Returns a message if the email does not exist or the password does not match.
+
+```
+json
+{
+  "message": "Invalid Email Or Wrong Password"
+}
+```
+---
+
+## `/captain/profile` EndPoint
+
+### Description
+This endpoint retrieves the profile of the currently authenticated captain. The request must include a valid JWT token in the authorization header.
+
+### URL
+**GET** `/captain/profile`
+
+### Headers
+- **Authorization:** `Bearer JWT_TOKEN_HERE` (required)
+
+### Responses
+
+#### Success Response
+- **Status Code:** 200 OK
+- **Content:** Returns the captain object.
+
+```json
+
+{
+  "_id": "CAPTAIN_ID",
+  "fullname": {
+    "firstName": "Jane",
+    "lastName": "Doe"
+  },
+  "email": "jane.doe@example.com",
+  "vehicle": {
+    "color": "Red",
+    "plate": "ABC123",
+    "capacity": "4",
+    "vehicleType": "car"
+  }
+  // Other captain fields (excluding password)
+}
+```
+
+#### Error Response
+- **Status Code:** 401 Unauthorized  
+  Returns a message if the token is missing, invalid, or expired.
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
+---
+
+## `/captain/logout` EndPoint
+
+### Description
+This endpoint logs out the currently authenticated captain by blacklisting the JWT token. The token provided in the authorization header will be stored in a blacklist, invalidating future requests using the same token.
+
+### URL
+**GET** `/captain/logout`
+
+### Headers
+- **Authorization:** `Bearer JWT_TOKEN_HERE` (required)
+
+### Responses
+
+#### Success Response
+- **Status Code:** 200 OK
+- **Content:** Returns a confirmation message.
+
+```json
+
+{
+  "message": "Logged Out Successful!"
+}
+```
+
+#### Error Response
+- **Status Code:** 401 Unauthorized  
+  Returns a message if the token is missing or invalid.
+
+```json
+{
+  "message": "Unauthorized"
+}
+```
+
 ---
 
 ## Notes
