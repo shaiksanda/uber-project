@@ -12,11 +12,15 @@ app.use(cookieParser())
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 const userRoutes=require("./routes/user")
+const captainRoutes=require("./routes/captain")
 
 app.get("/",(req,res)=>{
     res.send("Hello World")
 })
 
 app.use("/users",userRoutes)
-
+app.use("/captain/",captainRoutes)
 module.exports=app
+
+
+//one hour 17 mins 24 secs watched

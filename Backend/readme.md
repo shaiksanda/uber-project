@@ -211,4 +211,102 @@ This endpoint logs out the currently authenticated user by blacklisting the JWT 
 ## Notes
 - Input is validated using express-validator.
 - Passwords are hashed using bcrypt before storing.
-- JWT tokens are signed with a secret from environment variables and
+- JWT tokens are signed with a secret from environment variables.
+
+
+# Captain Routes Documentation
+
+## `/captain/register` EndPoint
+
+### Description
+This endpoint registers a new captain. It validates the incoming data, hashes the password, creates a captain record in the database along with vehicle details, and returns a JSON Web Token (JWT) along with the captain details.
+
+### URL
+**POST** `/captain/register`
+
+### Request Body
+- **fullname** (object): Contains the captain's name.
+  - **firstName** (string, required): Must be at least 3 characters long.
+  - **lastName** (string, optional): If provided, must be at least 3 characters long.
+- **email** (string, required): Must be a valid email address.
+- **password** (string, required): Must be at least 6 characters long.
+- **vehicle** (object): Contains the vehicle information.
+  - **color** (string, required): Must be at least 3 characters long.
+  - **plate** (string, required): Must be at least 3 characters long.
+  - **capacity** (string, required): Should be provided (e.g., "1", "4", etc.).
+  - **vehicleType** (string, required): Must be one of the following values: `"car"`, `"auto"`, or `"motorcycle"`.
+
+#### Example Request
+```json
+{
+  "fullname": {
+    "firstName": "Jane",
+    "lastName": "Doe"
+  },
+  "email": "jane.doe@example.com",
+  "password": "password123",
+  "vehicle": {
+    "color": "Red",
+    "plate": "ABC123",
+    "capacity": "4",
+    "vehicleType": "car"
+  }
+}
+```
+
+### Responses
+
+#### Success Response
+- **Status Code:** 201 Created
+- **Content:** Returns a JWT token and the created captain object.
+
+```json
+{
+  "token": "JWT_TOKEN_HERE",
+  "captain": {
+    "fullname": {
+      "firstName": "Jane",
+      "lastName": "Doe"
+    },
+    "email": "jane.doe@example.com",
+    "vehicle": {
+      "color": "Red",
+      "plate": "ABC123",
+      "capacity": "4",
+      "vehicleType": "car"
+    }
+    // Other captain fields (excluding password)
+  }
+}
+```
+
+#### Error Response
+- **Status Code:** 400 Bad Request
+- **Content:** Returns an array of validation error objects if the input data fails the validation checks or if the captain already exists.
+
+```json
+{
+  "errors": [
+    {
+      "msg": "Invalid Email",
+      "param": "email",
+      "location": "body"
+    }
+  ]
+}
+```
+
+or
+
+```json
+{
+  "message": "Captain Already Exists"
+}
+```
+
+---
+
+## Notes
+- Input is validated using express-validator.
+- Passwords are hashed using bcrypt before storing.
+- JWT tokens are generated using a secret from environment variables.
